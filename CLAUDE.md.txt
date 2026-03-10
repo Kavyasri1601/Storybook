@@ -1,0 +1,815 @@
+# CLAUDE.md - E-Commerce UI Component Library (Storybook)
+
+## Project Overview
+
+This repository contains the *Storybook component library* for the e-commerce platform migration project. Components built here are published as an npm package (@ecommerce/ui) and consumed by the Next.js application.
+
+### Project Context
+
+- *This Repo*: Storybook component library (ecommerce-ui)
+- *Related Repo*: Next.js application (ecommerce-web) - consumes this package
+- *Team Size*: 10-15 developers
+- *Migration Goal*: Converting .NET e-commerce app to modern JS/TS stack
+
+### Repository Purpose
+
+1. Build reusable, documented UI components
+1. Provide visual testing environment via Storybook
+1. Publish components as npm package for consumption
+1. Maintain design system consistency across applications
+
+-----
+
+## Tech Stack
+
+|Category           |Technology  |Version|
+|-------------------|------------|-------|
+|*Package Manager*|npm         |10.x+  |
+|*Language*       |TypeScript  |5.x+   |
+|*UI Library*     |React       |18.x+  |
+|*Component Dev*  |Storybook   |8.x+   |
+|*Styling*        |Tailwind CSS|3.x+   |
+|*Build Tool*     |Vite        |5.x+   |
+|*Unit Testing*   |Vitest      |1.x+   |
+|*Icons*          |Lucide React|Latest |
+
+-----
+
+## Folder Structure
+
+
+ecommerce-ui/
+├── .storybook/
+│   ├── main.ts                 # Storybook configuration
+│   ├── preview.ts              # Global decorators & parameters
+│   └── manager.ts              # Storybook UI customization
+├── src/
+│   ├── components/
+│   │   ├── primitives/         # Basic building blocks
+│   │   │   ├── Button/
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Button.stories.tsx
+│   │   │   │   ├── Button.test.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── Input/
+│   │   │   │   ├── Input.tsx
+│   │   │   │   ├── Input.stories.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── Typography/
+│   │   │   ├── Icon/
+│   │   │   ├── Link/
+│   │   │   └── index.ts
+│   │   ├── forms/              # Form-related components
+│   │   │   ├── TextField/
+│   │   │   ├── PasswordField/
+│   │   │   ├── Checkbox/
+│   │   │   ├── Radio/
+│   │   │   ├── Select/
+│   │   │   ├── FormField/
+│   │   │   ├── FormLabel/
+│   │   │   ├── FormError/
+│   │   │   └── index.ts
+│   │   ├── feedback/           # User feedback components
+│   │   │   ├── Alert/
+│   │   │   ├── Toast/
+│   │   │   ├── Modal/
+│   │   │   ├── Spinner/
+│   │   │   ├── Skeleton/
+│   │   │   ├── Progress/
+│   │   │   └── index.ts
+│   │   ├── navigation/         # Navigation components
+│   │   │   ├── Navbar/
+│   │   │   ├── Sidebar/
+│   │   │   ├── Breadcrumb/
+│   │   │   ├── Footer/
+│   │   │   ├── Menu/
+│   │   │   ├── Tabs/
+│   │   │   └── index.ts
+│   │   ├── layout/             # Layout components
+│   │   │   ├── Container/
+│   │   │   ├── Grid/
+│   │   │   ├── Card/
+│   │   │   ├── Divider/
+│   │   │   ├── Stack/
+│   │   │   └── index.ts
+│   │   ├── data-display/       # Data presentation components
+│   │   │   ├── Table/
+│   │   │   ├── Badge/
+│   │   │   ├── Avatar/
+│   │   │   ├── Tooltip/
+│   │   │   └── index.ts
+│   │   └── index.ts            # Main barrel export
+│   ├── hooks/                  # Shared hooks
+│   │   ├── useMediaQuery.ts
+│   │   ├── useClickOutside.ts
+│   │   ├── useDebounce.ts
+│   │   └── index.ts
+│   ├── utils/                  # Utility functions
+│   │   ├── cn.ts               # Tailwind class merger
+│   │   ├── formatters.ts       # Value formatters
+│   │   └── index.ts
+│   ├── types/                  # Shared TypeScript types
+│   │   ├── common.types.ts
+│   │   └── index.ts
+│   ├── styles/
+│   │   └── globals.css         # Global styles & Tailwind imports
+│   └── index.ts                # Package entry point
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+├── postcss.config.js
+├── vite.config.ts
+├── vitest.config.ts
+├── .eslintrc.cjs
+├── .prettierrc
+├── CLAUDE.md
+└── README.md
+
+
+-----
+
+## Commands
+
+bash
+# Install dependencies
+npm install
+
+# Start Storybook development server (port 6006)
+npm run dev
+# or
+npm run storybook
+
+# Build component library for distribution
+npm run build
+
+# Build static Storybook for deployment
+npm run build-storybook
+
+# Run unit tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Lint code
+npm run lint
+
+# Fix lint issues
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Type check
+npm run typecheck
+
+# Create package tarball for local testing
+npm pack
+
+# Clean build artifacts
+npm run clean
+
+
+-----
+
+## Component Development Standards
+
+### Naming Conventions
+
+
+Components:       PascalCase          Button.tsx, LoginForm.tsx
+Stories:          PascalCase.stories  Button.stories.tsx
+Tests:            PascalCase.test     Button.test.tsx
+Hooks:            camelCase + use     useMediaQuery.ts
+Utilities:        camelCase           formatCurrency.ts
+Types:            PascalCase          ButtonProps, Size
+Constants:        SCREAMING_SNAKE     DEFAULT_SIZE
+Folders:          PascalCase          Button/, TextField/
+Category folders: kebab-case          primitives/, data-display/
+
+
+### Component Template
+
+typescript
+// src/components/primitives/Button/Button.tsx
+import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { cn } from '@/utils';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Visual style variant */
+  variant?: ButtonVariant;
+  /** Button size */
+  size?: ButtonSize;
+  /** Show loading spinner */
+  isLoading?: boolean;
+  /** Full width button */
+  fullWidth?: boolean;
+  /** Left icon */
+  leftIcon?: React.ReactNode;
+  /** Right icon */
+  rightIcon?: React.ReactNode;
+}
+
+const variantStyles: Record<ButtonVariant, string> = {
+  primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
+  secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500',
+  outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
+  ghost: 'text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
+  destructive: 'bg-error text-white hover:bg-error-dark focus:ring-error',
+};
+
+const sizeStyles: Record<ButtonSize, string> = {
+  sm: 'px-3 py-1.5 text-sm gap-1.5',
+  md: 'px-4 py-2 text-base gap-2',
+  lg: 'px-6 py-3 text-lg gap-2.5',
+};
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      fullWidth = false,
+      leftIcon,
+      rightIcon,
+      className,
+      disabled,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <button
+        ref={ref}
+        className={cn(
+          // Base styles
+          'inline-flex items-center justify-center font-medium rounded-md',
+          'transition-colors duration-200',
+          'focus:outline-none focus:ring-2 focus:ring-offset-2',
+          'disabled:opacity-50 disabled:cursor-not-allowed',
+          // Variant & size
+          variantStyles[variant],
+          sizeStyles[size],
+          // Conditional
+          fullWidth && 'w-full',
+          className
+        )}
+        disabled={disabled || isLoading}
+        {...props}
+      >
+        {isLoading ? (
+          <>
+            <LoadingSpinner size={size} />
+            <span>Loading...</span>
+          </>
+        ) : (
+          <>
+            {leftIcon && <span className="shrink-0">{leftIcon}</span>}
+            {children}
+            {rightIcon && <span className="shrink-0">{rightIcon}</span>}
+          </>
+        )}
+      </button>
+    );
+  }
+);
+
+Button.displayName = 'Button';
+
+// Internal loading spinner
+const LoadingSpinner = ({ size }: { size: ButtonSize }) => {
+  const sizeClasses = {
+    sm: 'h-3 w-3',
+    md: 'h-4 w-4',
+    lg: 'h-5 w-5',
+  };
+
+  return (
+    <svg
+      className={cn('animate-spin', sizeClasses[size])}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
+    </svg>
+  );
+};
+
+
+### Story Template
+
+typescript
+// src/components/primitives/Button/Button.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { Mail, ArrowRight, Trash2 } from 'lucide-react';
+import { Button } from './Button';
+
+const meta: Meta<typeof Button> = {
+  title: 'Primitives/Button',
+  component: Button,
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'A versatile button component with multiple variants, sizes, and states.',
+      },
+    },
+  },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'outline', 'ghost', 'destructive'],
+      description: 'Visual style variant',
+      table: {
+        defaultValue: { summary: 'primary' },
+      },
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'Button size',
+      table: {
+        defaultValue: { summary: 'md' },
+      },
+    },
+    isLoading: {
+      control: 'boolean',
+      description: 'Show loading state',
+    },
+    fullWidth: {
+      control: 'boolean',
+      description: 'Make button full width',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disable button',
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+// Default
+export const Default: Story = {
+  args: {
+    children: 'Button',
+  },
+};
+
+// Variants
+export const Primary: Story = {
+  args: {
+    variant: 'primary',
+    children: 'Primary Button',
+  },
+};
+
+export const Secondary: Story = {
+  args: {
+    variant: 'secondary',
+    children: 'Secondary Button',
+  },
+};
+
+export const Outline: Story = {
+  args: {
+    variant: 'outline',
+    children: 'Outline Button',
+  },
+};
+
+export const Ghost: Story = {
+  args: {
+    variant: 'ghost',
+    children: 'Ghost Button',
+  },
+};
+
+export const Destructive: Story = {
+  args: {
+    variant: 'destructive',
+    children: 'Delete',
+    leftIcon: <Trash2 size={16} />,
+  },
+};
+
+// Sizes
+export const Small: Story = {
+  args: {
+    size: 'sm',
+    children: 'Small Button',
+  },
+};
+
+export const Medium: Story = {
+  args: {
+    size: 'md',
+    children: 'Medium Button',
+  },
+};
+
+export const Large: Story = {
+  args: {
+    size: 'lg',
+    children: 'Large Button',
+  },
+};
+
+// States
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+    children: 'Submit',
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+    children: 'Disabled',
+  },
+};
+
+export const FullWidth: Story = {
+  args: {
+    fullWidth: true,
+    children: 'Full Width Button',
+  },
+  parameters: {
+    layout: 'padded',
+  },
+};
+
+// With Icons
+export const WithLeftIcon: Story = {
+  args: {
+    leftIcon: <Mail size={16} />,
+    children: 'Send Email',
+  },
+};
+
+export const WithRightIcon: Story = {
+  args: {
+    rightIcon: <ArrowRight size={16} />,
+    children: 'Continue',
+  },
+};
+
+export const IconOnly: Story = {
+  args: {
+    children: <Mail size={20} />,
+    'aria-label': 'Send email',
+  },
+};
+
+// Showcase all variants
+export const AllVariants: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h3 className="text-sm font-medium text-gray-500 mb-3">Variants</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="primary">Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="destructive">Destructive</Button>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium text-gray-500 mb-3">Sizes</h3>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="sm">Small</Button>
+          <Button size="md">Medium</Button>
+          <Button size="lg">Large</Button>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium text-gray-500 mb-3">States</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button>Default</Button>
+          <Button disabled>Disabled</Button>
+          <Button isLoading>Loading</Button>
+        </div>
+      </div>
+    </div>
+  ),
+  parameters: {
+    layout: 'padded',
+  },
+};
+
+
+### Index File (Barrel Export)
+
+typescript
+// src/components/primitives/Button/index.ts
+export { Button } from './Button';
+export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
+
+// src/components/primitives/index.ts
+export * from './Button';
+export * from './Input';
+export * from './Typography';
+export * from './Icon';
+export * from './Link';
+
+// src/components/index.ts
+export * from './primitives';
+export * from './forms';
+export * from './feedback';
+export * from './navigation';
+export * from './layout';
+export * from './data-display';
+
+// src/index.ts (package entry)
+export * from './components';
+export * from './hooks';
+export * from './utils';
+export type * from './types';
+
+
+### Utility: Class Name Merger (cn)
+
+typescript
+// src/utils/cn.ts
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+/**
+ * Merges Tailwind CSS classes with proper precedence
+ * Uses clsx for conditional classes and tailwind-merge for deduplication
+ */
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
+
+
+-----
+
+## Design Tokens (Tailwind Configuration)
+
+typescript
+// tailwind.config.ts
+import type { Config } from 'tailwindcss';
+
+const config: Config = {
+  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        // Primary brand color - update based on Figma
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
+        },
+        // Secondary brand color
+        secondary: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
+        },
+        // Semantic colors
+        success: {
+          light: '#86efac',
+          DEFAULT: '#22c55e',
+          dark: '#15803d',
+        },
+        warning: {
+          light: '#fcd34d',
+          DEFAULT: '#f59e0b',
+          dark: '#b45309',
+        },
+        error: {
+          light: '#fca5a5',
+          DEFAULT: '#ef4444',
+          dark: '#b91c1c',
+        },
+        info: {
+          light: '#93c5fd',
+          DEFAULT: '#3b82f6',
+          dark: '#1d4ed8',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      borderRadius: {
+        DEFAULT: '0.5rem',
+      },
+      boxShadow: {
+        'elevation-1': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'elevation-2': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'elevation-3': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+      },
+    },
+  },
+  plugins: [require('@tailwindcss/forms')],
+};
+
+export default config;
+
+
+-----
+
+## Component Checklist
+
+When creating a new component, ensure:
+
+- [ ] TypeScript interface with JSDoc comments for all props
+- [ ] Props have sensible defaults
+- [ ] Uses forwardRef for DOM element components
+- [ ] Component has displayName set
+- [ ] Uses cn() utility for class merging
+- [ ] Follows accessibility best practices (ARIA, keyboard navigation)
+- [ ] Responsive design considered
+- [ ] Storybook story with all variants documented
+- [ ] Story has autodocs tag
+- [ ] Exported from component’s index.ts
+- [ ] Exported from category’s index.ts
+- [ ] Exported from main index.ts
+
+-----
+
+## Publishing Workflow
+
+### Local Testing (npm pack)
+
+bash
+# 1. Build the package
+npm run build
+
+# 2. Create tarball
+npm pack
+# Output: ecommerce-ui-0.1.0.tgz
+
+# 3. In consuming app (ecommerce-web), install local package
+cd ../ecommerce-web
+npm install ../ecommerce-ui/ecommerce-ui-0.1.0.tgz
+
+
+### Package.json Configuration
+
+json
+{
+  "name": "@ecommerce/ui",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": ["dist"],
+  "sideEffects": ["**/*.css"],
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
+
+
+-----
+
+## POC Component Scope
+
+### Phase 1 Components
+
+*Primitives:*
+
+- [ ] Button (variants, sizes, loading, icons)
+- [ ] Input (text input base)
+- [ ] Typography (headings, text, labels)
+- [ ] Icon (wrapper for Lucide icons)
+- [ ] Link (styled anchor)
+
+*Forms:*
+
+- [ ] TextField (Input + Label + Error)
+- [ ] PasswordField (with show/hide toggle)
+- [ ] Checkbox
+- [ ] FormField (wrapper component)
+- [ ] FormLabel
+- [ ] FormError
+
+*Feedback:*
+
+- [ ] Alert (info, success, warning, error)
+- [ ] Spinner (loading indicator)
+- [ ] Toast (notification) - basic
+
+*Layout:*
+
+- [ ] Card (container with shadow)
+- [ ] Container (max-width wrapper)
+- [ ] Divider (horizontal rule)
+
+*Navigation:*
+
+- [ ] Navbar (basic header)
+- [ ] Footer (basic footer)
+
+-----
+
+## Claude Instructions
+
+### When Working on This Repository
+
+1. *Always check this CLAUDE.md first* for standards
+1. *Follow folder structure* exactly as defined
+1. *Use TypeScript strict mode* - no any types
+1. *Create Storybook stories* for every component
+1. *Use forwardRef* for components that wrap DOM elements
+1. *Export from all index files* (component → category → root)
+1. *Use cn() utility* for all Tailwind class merging
+
+### When Creating Components from Figma/Screenshots
+
+1. Analyze the design for variants, sizes, and states
+1. Identify the appropriate category folder
+1. Create component with proper TypeScript interfaces
+1. Implement all variants shown in design
+1. Add comprehensive Storybook stories
+1. Ensure accessibility (focus states, ARIA labels)
+1. Test responsive behavior if applicable
+
+### Common Patterns
+
+typescript
+// Conditional classes
+className={cn(
+  'base-classes',
+  variant === 'primary' && 'primary-classes',
+  size === 'lg' && 'large-classes',
+  disabled && 'disabled-classes',
+  className // Allow override
+)}
+
+// ForwardRef pattern
+export const Component = forwardRef<HTMLDivElement, ComponentProps>(
+  ({ className, ...props }, ref) => {
+    return <div ref={ref} className={cn('base', className)} {...props} />;
+  }
+);
+Component.displayName = 'Component';
+
+// Polymorphic component (as prop)
+export interface PolymorphicProps<T extends React.ElementType> {
+  as?: T;
+}
+
+
+-----
+
+## Related Documentation
+
+- *Next.js App Repository*: See ecommerce-web/CLAUDE.md
+- *Storybook Docs*: https://storybook.js.org/docs
+- *Tailwind CSS*: https://tailwindcss.com/docs
+- *Lucide Icons*: https://lucide.dev/icons
+
+-----
+
+This document is the source of truth for the Storybook component library. Update as the project evolves.

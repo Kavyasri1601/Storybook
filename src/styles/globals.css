@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Default font */
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Focus visible styles */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  /* Dark mode focus visible */
+  .dark *:focus-visible {
+    @apply ring-offset-secondary-900;
+  }
+
+  /* Smooth transitions for dark mode */
+  * {
+    @apply transition-colors duration-200;
+  }
+
+  /* Remove transition for elements that shouldn't animate */
+  button,
+  input,
+  select,
+  textarea {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
+      transform;
+  }
+}
+
+@layer components {
+  /* Reusable form input base styles */
+  .form-input-base {
+    @apply block w-full rounded-md border border-secondary-300 bg-white px-3 py-2 text-secondary-900 shadow-sm placeholder:text-secondary-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:border-secondary-600 dark:bg-secondary-800 dark:text-white dark:placeholder:text-secondary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400;
+  }
+
+  /* Error state for form inputs */
+  .form-input-error {
+    @apply border-error focus:border-error focus:ring-error dark:border-error-light dark:focus:border-error-light dark:focus:ring-error-light;
+  }
+
+  /* Disabled state for form inputs */
+  .form-input-disabled {
+    @apply cursor-not-allowed bg-secondary-50 opacity-50 dark:bg-secondary-800;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.secondary.300') transparent;
+  }
+
+  .dark .scrollbar-thin {
+    scrollbar-color: theme('colors.secondary.600') transparent;
+  }
+}
